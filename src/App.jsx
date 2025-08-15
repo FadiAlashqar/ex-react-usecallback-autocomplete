@@ -1,19 +1,29 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 
 function App() {
 
+  function debounce(callback, delay) {
+    let timer;
+    return (value) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        callback(value);
+      }, delay);
+    };
+  }
+
   const [query, setQuery] = useState('')
   const [product, SetPorduct] = useState([])
 
-  const fetchProduct = () => {
+  const fetchProduct = useCallback(debounce((query) => {
     fetch(`http://localhost:3333/products?search=${query}`)
       .then((response) => response.json())
       .then((obj) => SetPorduct(obj))
-  }
+  }, 500), [])
 
   useEffect(() => {
-    fetchProduct()
+    fetchProduct(query)
   }, [query])
 
   console.log(product)
