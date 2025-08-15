@@ -1,34 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react'
+
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [query, setQuery] = useState('')
+  const [product, SetPorduct] = useState([])
+
+  const fetchProduct = () => {
+    fetch(`http://localhost:3333/products?search=${query}`)
+      .then((response) => response.json())
+      .then((obj) => SetPorduct(obj))
+  }
+
+  useEffect(() => {
+    fetchProduct()
+  }, [query])
+
+  console.log(product)
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="container">
+      <h1>Shop</h1>
+      <div className="row">
+        <div className="col-12 p-3">
+          <input
+            type="text"
+            value={query}
+            placeholder='Search...'
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+        <div className="col-12">
+          {query ? product.map((p => {
+            return <div key={p.id} className='prod-element'>
+              <p>{p.name}</p>
+            </div>
+          })) :
+            ''}
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 
